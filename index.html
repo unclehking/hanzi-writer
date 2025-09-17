@@ -14,7 +14,7 @@
             createApp({
                 quizMode: false,
                 writer: null,
-                inputValue: '金',
+                inputValue: '一',
                 processing: true,
                 show: false,
                 tips: '',
@@ -122,7 +122,7 @@
             </div>
             <div id="character-target-div" @click="toggleAnimation" ></div>
             <div v-if="toastShow" class="toast">{{ tips}}</div>
-            <div v-if="reQuizShow" class="re-quiz">
+            <div v-if="reQuizShow" class="re-quiz" @click="quiz">
                 <i class="iconfont icon-shuaxin"></i>
             </div>
         </div>
