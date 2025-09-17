@@ -33,7 +33,11 @@
                 setCharacter() {
                     if (this.inputValue) {
                         this.writer.setCharacter(this.inputValue)
-                        this.writer.loopCharacterAnimation()
+                        if (this.quizMode) {
+                            this.quiz()
+                        }else{
+                            this.writer.loopCharacterAnimation()
+                        }
                     }
                     this.show = false
                 },
@@ -66,7 +70,7 @@
                     this.quizMode = true
                     this.writer.quiz({
                         onMistake() {
-                            _this.showToast('写错了，请正确的笔画顺序重新写！')
+                            _this.showToast('写错了，请按正确的笔画顺序重新书写！')
                         },
                         onComplete() {
                             _this.showToast(`恭喜你，学会了写"${_this.inputValue}"字！`)
