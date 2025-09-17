@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>小金学汉字</title>
-        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_dg86fve3jpq.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_mtsch24v39a.css">
         <script src="hanzi-writer.js"></script>
         <link rel="stylesheet" href="css/style.css">
     </head>
@@ -20,6 +20,7 @@
                 tips: '',
                 toastShow: false,
                 timer: null,
+                reQuizShow: false,
                 initWriter() {
                     this.writer = HanziWriter.create('character-target-div', this.inputValue, {
                         width: 320,
@@ -68,12 +69,14 @@
                 quiz() {
                     let _this = this
                     this.quizMode = true
+                    this.reQuizShow = false
                     this.writer.quiz({
                         onMistake() {
                             _this.showToast('写错了，请按正确的笔画顺序重新书写！')
                         },
                         onComplete() {
                             _this.showToast(`恭喜你，学会了写"${_this.inputValue}"字！`)
+                            _this.reQuizShow = true
                         }
                     })
                     this.showToast('按汉字笔画顺序，开始练习书写汉字！')
@@ -119,6 +122,9 @@
             </div>
             <div id="character-target-div" @click="toggleAnimation" ></div>
             <div v-if="toastShow" class="toast">{{ tips}}</div>
+            <div v-if="reQuizShow" class="re-quiz">
+                <i class="iconfont icon-shuaxin"></i>
+            </div>
         </div>
     </body>
 </html>

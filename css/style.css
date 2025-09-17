@@ -141,3 +141,19 @@
   left: 0;
   z-index: 100;
 }
+.wrap .re-quiz {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+.wrap .re-quiz .iconfont {
+  font-size: 24px;
+  color: #c6c3c3;
+}
