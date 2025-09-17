@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>小金学汉字</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_ck9xg2nahdj.css">
+        <script src="hanzi-writer.js"></script>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <script type="module">
+            import { createApp } from './petite-vue.es.js'
+            createApp({
+                writer: null,
+                inputValue: '金',
+                processing: true,
+                show: false,
+                initWriter() {
+                    this.writer = HanziWriter.create('character-target-div', this.inputValue, {
+                        width: 320,
+                        height: 320,
+                        padding: 5,
+                        strokeColor: '#000000',
+                        delayBetweenLoops: 3000,
+                    });
+                    this.writer.loopCharacterAnimation()
+                },
+                setCharacter() {
+                    if (this.inputValue) {
+                        this.writer.setCharacter(this.inputValue)
+                        this.writer.loopCharacterAnimation()
+                    }
+                    this.show = false
+                },
+                showWin() {
+                    this.inputValue = ''
+                    this.show = true
+                },
+                changeCharacter() {
+                    if (this.inputValue.length > 0) {
+                        this.inputValue = this.inputValue.at(0)
+                    }
+                    if (/[^\u4e00-\u9fff]/.test(this.inputValue)) {
+                        this.inputValue = ''
+                    }
+                },
+                mounted() {
+                    this.initWriter()
+                },
+                toggleAnimation() {
+                    if (this.processing) {
+                        this.writer.pauseAnimation()
+                        this.processing = false
+                    } else {
+                        this.writer.resumeAnimation()
+                        this.processing = true
+                    }
+                },
+                quiz() {
+                    this.writer.quiz()
+                },
+
+            }).mount()
+        </script>
+        <div v-scope @vue:mounted="mounted" class="wrap">
+            <div class="search-wrap">
+                <div class="left" @click="quiz">
+                    <i class="iconfont icon-zhuanxie"></i>
+                </div>
+                <div class="right" @click="showWin">
+                    <i class="iconfont icon-sousuo"></i>
+                </div>
+            </div>
+            <div class="input-wrap" v-if="show" @click="show = false">
+                <div class="input-content" @click.stop >
+                    <view style="display:flex;transform:translateY(-8px);">
+                        <input type="text" v-model="inputValue" placeholder="请输入需要查看汉字" @input="changeCharacter" />
+                        <div class="btn" @click="setCharacter">确认</div>
+                    </view>
+                    <div class="tips">
+                        小提示：可轻触汉字进行暂停/播放书写动画
+                    </div>
+                </div>
+            </div>
+            <div id="character-target-div" @click="toggleAnimation" ></div>
+        </div>
+    </body>
+</html>

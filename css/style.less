@@ -1,0 +1,133 @@
+* {
+    overflow: hidden;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+.wrap {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .search-wrap {
+        border: solid #e7e6e6 1px;
+        height: 36px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 99;
+        font-size: 20px;
+        .left,.right{
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .left{
+            position: relative;
+            &::after{
+                width: 1px;
+                height: 100%;
+                background-color: #f4f4f4;
+                content: " ";
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+        }
+    }
+    .input-wrap {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        .input-content {
+            width: 100%;
+            height: 160px;
+            background: #ffffff;
+            border-radius: 0 0 12px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            input {
+                outline: none;
+                width: 180px;
+                height: 24px;
+                border-radius: 50px 0 0 50px;
+                padding: 6px 12px;
+                border: solid #9b9a9a 1px;
+                &::placeholder {
+                    color: #ccc;
+                    letter-spacing: 2px;
+                }
+            }
+        }
+        .tips {
+            width: 100%;
+            position: absolute;
+            left: 0;
+            bottom: 20px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            letter-spacing: 2px;
+        
+        }
+        .btn {
+            width: 60px;
+            height: 36px;
+            border: solid #9b9a9a 1px;
+            border-radius: 0 50px 50px 0;
+            cursor: pointer;
+            margin-left: 4px;
+            background-color: #f4f4f4;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+    #character-target-div {
+        width: 320px;
+        height: 320px;
+        border: dashed #999898 1px;
+        position: relative;
+        // visibility: hidden;
+        &::before {
+            width: 100%;
+            height: 0;
+            border-top: dashed #ccc 1px;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            content: ' ';
+            z-index: 0;
+        }
+        &::after {
+            width: 0;
+            height: 100%;
+            border-left: dashed #ccc 1px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            content: ' ';
+            z-index: 0;
+        }
+    }
+    
+    svg {
+        position: relative;
+        z-index: 2;
+    }
+}
+
