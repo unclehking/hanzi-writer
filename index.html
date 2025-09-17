@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>小金学汉字</title>
-        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_ck9xg2nahdj.css">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_dg86fve3jpq.css">
         <script src="hanzi-writer.js"></script>
         <link rel="stylesheet" href="css/style.css">
     </head>
@@ -12,10 +12,14 @@
         <script type="module">
             import { createApp } from './petite-vue.es.js'
             createApp({
+                quizMode: false,
                 writer: null,
                 inputValue: '金',
                 processing: true,
                 show: false,
+                tips: '',
+                toastShow: false,
+                timer: null,
                 initWriter() {
                     this.writer = HanziWriter.create('character-target-div', this.inputValue, {
                         width: 320,
@@ -58,14 +62,40 @@
                     }
                 },
                 quiz() {
-                    this.writer.quiz()
+                    let _this = this
+                    this.quizMode = true
+                    this.writer.quiz({
+                        onMistake() {
+                            _this.showToast('写错了，请正确的笔画顺序重新写！')
+                        },
+                        onComplete() {
+                            _this.showToast(`恭喜你，学会了写"${_this.inputValue}"字！`)
+                        }
+                    })
+                    this.showToast('按汉字笔画顺序，开始练习书写汉字！')
+                },
+                showToast(message) {
+                    this.tips = message
+                    this.toastShow = true
+                    this.timer && clearTimeout(this.timer)
+                    this.timer = setTimeout(() => {
+                        this.toastShow = false
+                    }, 4000)
+                },
+                cancelQuiz() {
+                    this.quizMode = false
+                    this.writer.loopCharacterAnimation()
+                    this.showToast('小提示：可轻触汉字进行暂停/播放书写动画')
                 },
 
             }).mount()
         </script>
         <div v-scope @vue:mounted="mounted" class="wrap">
             <div class="search-wrap">
-                <div class="left" @click="quiz">
+                <div v-if="quizMode" class="left" @click="cancelQuiz">
+                    <i class="iconfont icon-fanhui"></i>
+                </div>
+                <div v-else class="left" @click="quiz">
                     <i class="iconfont icon-zhuanxie"></i>
                 </div>
                 <div class="right" @click="showWin">
@@ -84,6 +114,7 @@
                 </div>
             </div>
             <div id="character-target-div" @click="toggleAnimation" ></div>
+            <div v-if="toastShow" class="toast">{{ tips}}</div>
         </div>
     </body>
 </html>
