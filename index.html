@@ -6,7 +6,7 @@
         <title>小金学汉字</title>
         <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_mtsch24v39a.css">
         <script src="hanzi-writer.js"></script>
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/style.css?v1">
     </head>
     <body>
         <script type="module">
@@ -14,7 +14,8 @@
             createApp({
                 quizMode: false,
                 writer: null,
-                inputValue: '一',
+                writerQuiz: null,
+                inputValue: '金',
                 processing: true,
                 show: false,
                 tips: '',
@@ -30,10 +31,19 @@
                         delayBetweenLoops: 3000,
                     });
                     this.writer.loopCharacterAnimation()
+
+                    this.writerQuiz = HanziWriter.create('character-quiz', this.inputValue, {
+                        width: 320,
+                        height: 320,
+                        padding: 5,
+                        strokeColor: '#000000',
+                        delayBetweenLoops: 3000,
+                    });
                 },
                 setCharacter() {
                     if (this.inputValue) {
                         this.writer.setCharacter(this.inputValue)
+                        this.writerQuiz.setCharacter(this.inputValue)
                         if (this.quizMode) {
                             this.quiz()
                         }else{
@@ -61,16 +71,18 @@
                     if (this.processing) {
                         this.writer.pauseAnimation()
                         this.processing = false
+                        this.showToast('已暂停', 1500)
                     } else {
                         this.writer.resumeAnimation()
                         this.processing = true
+                        this.showToast('已开始', 1500)
                     }
                 },
                 quiz() {
                     let _this = this
                     this.quizMode = true
                     this.reQuizShow = false
-                    this.writer.quiz({
+                    this.writerQuiz.quiz({
                         onMistake() {
                             _this.showToast('写错了，请按正确的笔画顺序重新书写！')
                         },
@@ -81,17 +93,20 @@
                     })
                     this.showToast('按汉字笔画顺序，开始练习书写汉字！')
                 },
-                showToast(message) {
+                showToast(message, duration = 4000) {
                     this.tips = message
                     this.toastShow = true
                     this.timer && clearTimeout(this.timer)
                     this.timer = setTimeout(() => {
                         this.toastShow = false
-                    }, 4000)
+                    }, duration)
                 },
                 cancelQuiz() {
                     this.quizMode = false
+                    this.reQuizShow = false
+                    this.writerQuiz.cancelQuiz()
                     this.writer.loopCharacterAnimation()
+                    this.processing = true
                     this.showToast('小提示：可轻触汉字进行暂停/播放书写动画')
                 },
 
@@ -112,7 +127,7 @@
             <div class="input-wrap" v-if="show" @click="show = false">
                 <div class="input-content" @click.stop >
                     <view style="display:flex;transform:translateY(-8px);">
-                        <input type="text" v-model="inputValue" placeholder="请输入需要查看汉字" @input="changeCharacter" />
+                        <input type="search" v-model="inputValue" placeholder="请输入需要查看汉字" @input="changeCharacter" @search="setCharacter" />
                         <div class="btn" @click="setCharacter">确认</div>
                     </view>
                     <div class="tips">
@@ -120,7 +135,10 @@
                     </div>
                 </div>
             </div>
-            <div id="character-target-div" @click="toggleAnimation" ></div>
+
+            <div v-show="!quizMode" id="character-target-div" @click="toggleAnimation" ></div>
+            <div v-show="quizMode" id="character-quiz" ></div>
+
             <div v-if="toastShow" class="toast">{{ tips}}</div>
             <div v-if="reQuizShow" class="re-quiz" @click="quiz">
                 <i class="iconfont icon-shuaxin"></i>
