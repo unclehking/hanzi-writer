@@ -4,144 +4,78 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>小金学汉字</title>
-        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_mtsch24v39a.css">
-        <script src="hanzi-writer.js"></script>
-        <link rel="stylesheet" href="css/style.css?v1">
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_zzqj6yvqem.css">
+        <link rel="stylesheet" href="css/home.css?v2">
+        <script src="res/hanzi.js?v2"></script>
     </head>
     <body>
         <script type="module">
             import { createApp } from './petite-vue.es.js'
             createApp({
-                quizMode: false,
-                writer: null,
-                writerQuiz: null,
-                inputValue: '金',
-                processing: true,
-                show: false,
-                tips: '',
-                toastShow: false,
-                timer: null,
-                reQuizShow: false,
-                initWriter() {
-                    this.writer = HanziWriter.create('character-target-div', this.inputValue, {
-                        width: 320,
-                        height: 320,
-                        padding: 5,
-                        strokeColor: '#000000',
-                        delayBetweenLoops: 3000,
-                    });
-                    this.writer.loopCharacterAnimation()
-
-                    this.writerQuiz = HanziWriter.create('character-quiz', this.inputValue, {
-                        width: 320,
-                        height: 320,
-                        padding: 5,
-                        strokeColor: '#000000',
-                        delayBetweenLoops: 3000,
-                    });
-                },
-                setCharacter() {
-                    if (this.inputValue) {
-                        this.writer.setCharacter(this.inputValue)
-                        this.writerQuiz.setCharacter(this.inputValue)
-                        if (this.quizMode) {
-                            this.quiz()
-                        }else{
-                            this.writer.loopCharacterAnimation()
-                        }
-                    }
-                    this.show = false
-                },
-                showWin() {
-                    this.inputValue = ''
-                    this.show = true
-                },
-                changeCharacter() {
-                    if (this.inputValue.length > 0) {
-                        this.inputValue = this.inputValue.at(0)
-                    }
-                    if (/[^\u4e00-\u9fff]/.test(this.inputValue)) {
-                        this.inputValue = ''
-                    }
-                },
+                list: [],
+                current: {},
+                categoryShow: false,
                 mounted() {
-                    this.initWriter()
-                },
-                toggleAnimation() {
-                    if (this.processing) {
-                        this.writer.pauseAnimation()
-                        this.processing = false
-                        this.showToast('已暂停', 1500)
-                    } else {
-                        this.writer.resumeAnimation()
-                        this.processing = true
-                        this.showToast('已开始', 1500)
+                    console.log(hanzi);
+
+                    this.list = hanzi.map(item => {
+                        item.words = item.words.split('');
+                        return item;
+                    });
+                    console.log(this.list);
+                    
+                    let category = localStorage.getItem('category');
+                    if (category) {
+                        this.current = this.list.find(item => item.label === category);
+                    }else{
+                        this.current = this.list[0];
                     }
                 },
-                quiz() {
-                    let _this = this
-                    this.quizMode = true
-                    this.reQuizShow = false
-                    this.writerQuiz.quiz({
-                        onMistake() {
-                            _this.showToast('写错了，请按正确的笔画顺序重新书写！')
-                        },
-                        onComplete() {
-                            _this.showToast(`恭喜你，学会了写"${_this.inputValue}"字！`)
-                            _this.reQuizShow = true
-                        }
-                    })
-                    this.showToast('按汉字笔画顺序，开始练习书写汉字！')
+                goWriter(word) {
+                    window.location.href = `writer.html?word=${word}`;
                 },
-                showToast(message, duration = 4000) {
-                    this.tips = message
-                    this.toastShow = true
-                    this.timer && clearTimeout(this.timer)
-                    this.timer = setTimeout(() => {
-                        this.toastShow = false
-                    }, duration)
+                changeCategory(item) {
+                    this.current = item;
+                    localStorage.setItem('category', item.label);
+                    this.toggleCategory();
                 },
-                cancelQuiz() {
-                    this.quizMode = false
-                    this.reQuizShow = false
-                    this.writerQuiz.cancelQuiz()
-                    this.writer.loopCharacterAnimation()
-                    this.processing = true
-                    this.showToast('小提示：可轻触汉字进行暂停/播放书写动画')
+                toggleCategory() {
+                    this.categoryShow = !this.categoryShow;
+                    if (this.categoryShow) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = 'auto';
+                    }
                 },
-
             }).mount()
         </script>
-        <div v-scope @vue:mounted="mounted" class="wrap">
-            <div class="search-wrap">
-                <div v-if="quizMode" class="left" @click="cancelQuiz">
-                    <i class="iconfont icon-fanhui"></i>
+        <div v-scope v-cloak @vue:mounted="mounted" class="wrap">
+            <div class="category-wrap" :class="{ 'show': categoryShow }" @click="toggleCategory">
+                <div class="category" @click.stop="toggleCategory">
+                    {{ current.label }}({{ current.count }})
+                    <i class="iconfont icon-arrow"></i>
                 </div>
-                <div v-else class="left" @click="quiz">
-                    <i class="iconfont icon-zhuanxie"></i>
-                </div>
-                <div class="right" @click="showWin">
-                    <i class="iconfont icon-sousuo"></i>
-                </div>
-            </div>
-            <div class="input-wrap" v-if="show" @click="show = false">
-                <div class="input-content" @click.stop >
-                    <view style="display:flex;transform:translateY(-8px);">
-                        <input type="search" v-model="inputValue" placeholder="请输入需要查看汉字" @input="changeCharacter" @search="setCharacter" />
-                        <div class="btn" @click="setCharacter">确认</div>
-                    </view>
-                    <div class="tips">
-                        小提示：可轻触汉字进行暂停/播放书写动画
+                <div class="category-list">
+                    <div class="category-item"
+                        v-for="item in list"
+                        :key="item.label"
+                        :class="{ 'active': current.label === item.label }"
+                        @click.stop="changeCategory(item)"
+                    >
+                        {{ item.label }}({{ item.count }})
+                        <i class="iconfont icon-check"></i>
                     </div>
                 </div>
             </div>
-
-            <div v-show="!quizMode" id="character-target-div" @click="toggleAnimation" ></div>
-            <div v-show="quizMode" id="character-quiz" ></div>
-
-            <div v-if="toastShow" class="toast">{{ tips}}</div>
-            <div v-if="reQuizShow" class="re-quiz" @click="quiz">
-                <i class="iconfont icon-shuaxin"></i>
+            
+            <div class="list">
+                <div class="item"
+                    v-for="item in current.words"
+                    :key="item"
+                    @click="goWriter(item)"
+                >
+                    <div class="txt">{{ item }}</div>
+                </div>
             </div>
         </div>
     </body>

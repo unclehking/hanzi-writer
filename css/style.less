@@ -16,38 +16,58 @@ input[type=search]::-webkit-search-cancel-button{
     display: flex;
     align-items: center;
     justify-content: center;
-    .search-wrap {
-        border: solid #e7e6e6 1px;
-        height: 36px;
-        border-radius: 50px;
+    .top{
+        width: calc(100vw - 24px);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        height: 40px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        position: fixed;
-        top: 10px;
-        right: 10px;
-        z-index: 99;
-        font-size: 20px;
-        .left,.right{
-            width: 50px;
+        justify-content: space-between;
+        padding: 12px;
+        border-bottom: solid #f4f4f4 1px;
+        .pinyin{
+            font-size: 16px;
+            .label{
+                opacity: 0.5;
+            }
+        }
+        .search-wrap {
+            border: solid #e7e6e6 1px;
+            height: 36px;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .left{
-            position: relative;
-            &::after{
-                width: 1px;
-                height: 100%;
-                background-color: #f4f4f4;
-                content: " ";
-                position: absolute;
-                top: 0;
-                right: 0;
+            cursor: pointer;
+            // position: fixed;
+            // top: 10px;
+            // right: 10px;
+            z-index: 99;
+            font-size: 20px;
+            .left,.right{
+                width: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .left{
+                position: relative;
+                &::after{
+                    width: 1px;
+                    height: 100%;
+                    background-color: #f4f4f4;
+                    content: " ";
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                }
             }
         }
     }
+    
     .input-wrap {
         position: fixed;
         z-index: 100;
@@ -88,6 +108,7 @@ input[type=search]::-webkit-search-cancel-button{
             color: #999;
             text-align: center;
             letter-spacing: 2px;
+            color: #69abdd;
         
         }
         .btn {
@@ -107,7 +128,7 @@ input[type=search]::-webkit-search-cancel-button{
     #character-target-div, #character-quiz {
         width: 320px;
         height: 320px;
-        border: dashed #999898 1px;
+        border: solid #b7b6b6 1px;
         position: relative;
         // visibility: hidden;
         &::before {
