@@ -8,6 +8,12 @@ body {
 }
 .wrap .category-wrap {
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 100;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.03);
 }
 .wrap .category-wrap .category {
   height: 50px;
@@ -17,8 +23,9 @@ body {
   padding: 0 12px;
   background-color: #fbfbfb;
   border-bottom: solid #f4f4f4 1px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
   letter-spacing: 2px;
+  width: 100vw;
+  z-index: 999;
 }
 .wrap .category-wrap .category .iconfont {
   font-size: 14px;
@@ -54,19 +61,19 @@ body {
   display: block;
 }
 .wrap .category-wrap.show {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
   height: 100vh;
   z-index: 100;
   background-color: rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
+.wrap .category-wrap.show .category {
+  box-shadow: none;
+}
 .wrap .category-wrap.show .category-list {
   display: block;
 }
 .wrap .list {
+  margin-top: 50px;
   padding: 12px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -87,6 +94,9 @@ body {
   font-size: 8vw;
   color: #fff;
   color: #313131;
+}
+.wrap .list .item.learned .txt {
+  opacity: 0.25;
 }
 .wrap .list .item::before {
   content: '';

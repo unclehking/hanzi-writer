@@ -28,6 +28,12 @@ input[type=search]::-webkit-search-cancel-button{
         justify-content: space-between;
         padding: 12px;
         border-bottom: solid #f4f4f4 1px;
+        .back{
+            .iconfont{
+                font-size: 32px;
+                opacity: 0.5;
+            }
+        }
         .pinyin{
             font-size: 16px;
             .label{
@@ -35,7 +41,7 @@ input[type=search]::-webkit-search-cancel-button{
             }
         }
         .search-wrap {
-            border: solid #e7e6e6 1px;
+            // border: solid #e7e6e6 1px;
             height: 36px;
             border-radius: 50px;
             display: flex;
@@ -55,6 +61,12 @@ input[type=search]::-webkit-search-cancel-button{
             }
             .left{
                 position: relative;
+                width: 100px;
+                font-size: 13px;
+                font-weight: normal;
+                .iconfont{
+                    margin-right: 4px;
+                }
                 &::after{
                     width: 1px;
                     height: 100%;

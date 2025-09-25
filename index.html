@@ -1,82 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>小金学汉字</title>
-        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_zzqj6yvqem.css">
-        <link rel="stylesheet" href="css/home.css?v2">
-        <script src="res/hanzi.js?v2"></script>
-    </head>
-    <body>
-        <script type="module">
-            import { createApp } from './petite-vue.es.js'
-            createApp({
-                list: [],
-                current: {},
-                categoryShow: false,
-                mounted() {
-                    console.log(hanzi);
 
-                    this.list = hanzi.map(item => {
-                        item.words = item.words.split('');
-                        return item;
-                    });
-                    console.log(this.list);
-                    
-                    let category = localStorage.getItem('category');
-                    if (category) {
-                        this.current = this.list.find(item => item.label === category);
-                    }else{
-                        this.current = this.list[0];
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>懒猴学汉字</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5023613_v4u6oa2q9b.css">
+    <link rel="stylesheet" href="css/home.css?v=4">
+    <script src="res/hanzi.js?v2"></script>
+</head>
+
+<body>
+    <script type="module">
+        const ehandler = ({ el, get, effect }) => {
+
+            effect(() => {
+                let pressTimer = null
+                let startTimeStamp = 0
+                let endTimeStamp = 0
+
+                let start = (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    startTimeStamp = e.timeStamp
+                    if (e.type === 'click' && e.button !== 0) {
+                        return;
                     }
-                },
-                goWriter(word) {
-                    window.location.href = `writer.html?word=${word}`;
-                },
-                changeCategory(item) {
-                    this.current = item;
-                    localStorage.setItem('category', item.label);
-                    this.toggleCategory();
-                },
-                toggleCategory() {
-                    this.categoryShow = !this.categoryShow;
-                    if (this.categoryShow) {
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        document.body.style.overflow = 'auto';
+                    if (pressTimer === null) {
+                        pressTimer = setTimeout(() => {  // 如果要在按住按钮的时候循环行一个函数，将setTimeout改为setInterval即可
+                            handler(e)
+                        }, 1000)
                     }
-                },
-            }).mount()
-        </script>
-        <div v-scope v-cloak @vue:mounted="mounted" class="wrap">
-            <div class="category-wrap" :class="{ 'show': categoryShow }" @click="toggleCategory">
-                <div class="category" @click.stop="toggleCategory">
-                    {{ current.label }}({{ current.count }})
-                    <i class="iconfont icon-arrow"></i>
-                </div>
-                <div class="category-list">
-                    <div class="category-item"
-                        v-for="item in list"
-                        :key="item.label"
-                        :class="{ 'active': current.label === item.label }"
-                        @click.stop="changeCategory(item)"
-                    >
-                        {{ item.label }}({{ item.count }})
-                        <i class="iconfont icon-check"></i>
-                    </div>
-                </div>
+                }
+
+                // Cancel Timeout
+                let cancel = (e) => {
+                    // console.log(e,'end');
+                    if (e.type === 'touchmove') {
+                        if (pressTimer !== null) {
+                            clearTimeout(pressTimer)
+                            pressTimer = null
+                        }
+                        return;
+                    }
+                    endTimeStamp = e.timeStamp
+                    console.log(endTimeStamp - startTimeStamp,2222);
+                    if (endTimeStamp - startTimeStamp < 120 ) {
+                        let params = get()
+                        params.click(params.word)
+                    }
+                    // Check if timer has a value or not
+                    if (pressTimer !== null) {
+                        clearTimeout(pressTimer)
+                        pressTimer = null
+                    }
+                }
+                // Run Function
+                const handler = (e) => {
+                    let params = get()
+                    params.longpress(params.word)
+                }
+
+                // Add Event listeners
+                // el.addEventListener("mousedown", start);
+                el.addEventListener("touchstart", start);
+                // Cancel timeouts if this events happen
+                // el.addEventListener("click", cancel);
+                // el.addEventListener("mouseout", cancel);
+                el.addEventListener("touchend", cancel);
+                el.addEventListener("touchcancel", cancel);
+                el.addEventListener("touchmove", cancel);
+                
+            })
+        }
+        import { createApp } from './petite-vue.es.js'
+        var app = createApp({
+            myWords: [],
+            list: [],
+            current: {},
+            categoryShow: false,
+            longClick: false,
+            timeOutEvent: null,
+            move: false,
+
+            mounted() {
+                console.log(hanzi);
+
+                this.list = hanzi.map(item => {
+                    item.words = item.words.split('');
+                    return item;
+                });
+                let myWords = JSON.parse(localStorage.getItem('my-words') || '[]');
+                this.myWords = myWords;
+                
+
+                let category = localStorage.getItem('category');
+                if (category) {
+                    this.current = this.list.find(item => item.label === category);
+                } else {
+                    this.current = this.list[0];
+                }
+            },
+            goWriter(word) {
+                window.location.href = `writer.html?word=${word}`;
+            },
+            learned(word) {
+                
+                console.log(word, 'leared');
+                // console.log(this.longClick,this.move,123);
+                if (this.move) {
+                    return
+                }
+                if (this.longClick ) {
+                    let result =   window.confirm('确定已学会该字？')
+                    if (result) {
+                        let myWords = new Set(JSON.parse(localStorage.getItem('my-words') || '[]'));
+                        myWords.add(word);
+                        localStorage.setItem('my-words', JSON.stringify(Array.from(myWords)));
+                        location.reload()
+                    }
+                } else {
+                    this.goWriter(word)
+                }
+                
+                
+            },
+            changeCategory(item) {
+                this.current = item;
+                localStorage.setItem('category', item.label);
+                this.toggleCategory();
+            },
+            toggleCategory() {
+                this.categoryShow = !this.categoryShow;
+                if (this.categoryShow) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                }
+            },
+            start(e) {
+                this.move = false;
+                this.longClick = false;
+                this.timeOutEvent = setTimeout(() => {
+                    this.longClick = true;
+                }, 1000);
+                e.stopPropagation();
+                // e.preventDefault();
+            },
+            moved() {
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = null;
+                this.move = true;
+            }
+        }).mount()
+        // .directive('ehandler', ehandler)
+        console.log(app,123);
+        
+    </script>
+    <div v-scope v-cloak @vue:mounted="mounted" class="wrap">
+
+        <div class="category-wrap" :class="{ 'show': categoryShow }" @click="toggleCategory">
+            <div class="category" @click.stop="toggleCategory">
+                1{{ current.label }}({{ current.count }})
+                <i class="iconfont icon-arrow"></i>
             </div>
-            
-            <div class="list">
-                <div class="item"
-                    v-for="item in current.words"
-                    :key="item"
-                    @click="goWriter(item)"
-                >
-                    <div class="txt">{{ item }}</div>
+            <div class="category-list">
+                <div class="category-item" v-for="item in list" :key="item.label"
+                    :class="{ 'active': current.label === item.label }" @click.stop="changeCategory(item)">
+                    {{ item.label }}({{ item.count }})
+                    <i class="iconfont icon-check"></i>
                 </div>
             </div>
         </div>
-    </body>
+
+        <div class="list">
+            <!-- @click="goWriter(item)" -->
+            <div 
+                class="item" 
+                v-for="item in current.words" 
+                :key="item" 
+                v-ehandler="{ longpress:learned, word:item, click: goWriter }"
+                :class="{ 'learned': myWords.includes(item) }"
+                @touchstart="start"
+                @touchend="learned(item)"
+                @touchcancel="learned(item)"
+            >
+                <div class="txt">{{ item }}</div>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

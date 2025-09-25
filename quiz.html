@@ -12,6 +12,7 @@
     </head>
     <body>
         <script type="module">
+            
             import { createApp } from './petite-vue.es.js'
             createApp({
                 quizMode: false,
@@ -26,14 +27,7 @@
                 reQuizShow: false,
                 pinyin: '',
                 initWriter() {
-                    this.writer = HanziWriter.create('character-target-div', this.inputValue, {
-                        width: 320,
-                        height: 320,
-                        padding: 5,
-                        strokeColor: '#000000',
-                        delayBetweenLoops: 3000,
-                    });
-                    this.writer.loopCharacterAnimation()
+                    
 
                     this.writerQuiz = HanziWriter.create('character-quiz', this.inputValue, {
                         width: 320,
@@ -43,16 +37,13 @@
                         delayBetweenLoops: 3000,
                     });
                     this.setPinyin()
+                    this.quiz()
                 },
                 setCharacter() {
                     if (this.inputValue) {
-                        this.writer.setCharacter(this.inputValue)
                         this.writerQuiz.setCharacter(this.inputValue)
-                        if (this.quizMode) {
-                            this.quiz()
-                        }else{
-                            this.writer.loopCharacterAnimation()
-                        }
+                        this.quiz()
+                        
                         this.setPinyin()
                         
                     }
@@ -161,8 +152,7 @@
                 </div>
             </div>
 
-            <div v-show="!quizMode" id="character-target-div" @click="toggleAnimation" ></div>
-            <div v-show="quizMode" id="character-quiz" ></div>
+            <div id="character-quiz" ></div>
 
             <div v-if="toastShow" class="toast">{{ tips}}</div>
             <div v-if="reQuizShow" class="re-quiz" @click="quiz">
