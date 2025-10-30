@@ -25,7 +25,7 @@
                 toastShow: false,
                 timer: null,
                 reQuizShow: false,
-                pinyin: '',
+                pinyinList: [],
                 initWriter() {
                     
 
@@ -114,7 +114,18 @@
                     history.back()
                 },
                 setPinyin() {
-                    this.pinyin = pinyinPro.pinyin(this.inputValue)
+                    fetch(`https://hanzi.h5cssjs.com/words/pinyin?word=${this.inputValue}`)
+                    .then(res => res.json())
+                    .then(res => {
+                        console.log(res.result, 1111);
+                        this.pinyinList = res.result
+                    })
+                    
+                },
+                playPinyin(pinyin) {
+                    let audio = new Audio(`https://hanyu-word-pinyin-short.cdn.bcebos.com/${pinyin}.mp3`)
+                    audio.play()
+                    
                 }
             }).mount()
         </script>
@@ -124,7 +135,15 @@
                     <i class="iconfont icon-fanhui1"></i>
                 </div> -->
                 <div class="pinyin">
-                    <span class="label">拼音：</span>{{pinyin}}
+                    <span class="label">读音：</span>
+                    <span 
+                        class="item"
+                        v-for="item in pinyinList" 
+                        :key="item[0]"
+                        @click="playPinyin(item[1])"
+                    >
+                        {{item[0]}}
+                    </span>
                 </div>
                 <div class="search-wrap">
                     <!-- <div v-if="quizMode" class="left" @click="cancelQuiz">
